@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+pydantic-settings
+sqlalchemy[asyncio]>=2.0
+asyncpg
+alembic
+mediapipe>=0.10.9,<0.10.22
+opencv-python-headless
+numpy<2
+scipy
+ultralytics
+pyjwt
+bcrypt
+python-multipart
+email-validator

@@ -1,0 +1,42 @@
+# Python environments and generated files
+.venv/
+venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.history/
+.coverage
+.coverage.*
+htmlcov/
+
+# Node.js and frontend build output
+node_modules/
+dist/
+.vite/
+coverage/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Local logs, editor files, and operating system metadata
+*.log
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+.idea/
+
+# Downloaded machine-learning model weights
+*.pt
+*.pth
+*.onnx
+*.safetensors

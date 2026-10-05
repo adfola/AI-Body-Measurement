@@ -1,0 +1,8 @@
+venv/
+__pycache__/
+*.py[cod]
+.env
+.env.docker
+*.bak
+.pytest_cache/
+*.pt
