@@ -34,6 +34,9 @@ class TailoringEngine:
         return {
             "shoulder_width": distance("l_shoulder", "r_shoulder"),
             "sleeve": distance("l_shoulder", "l_elbow") + distance("l_elbow", "l_wrist"),
+            "upper_arm": distance("l_shoulder", "l_elbow"),
+            "half_length": distance("l_shoulder", "l_hip"),
+            "full_length": distance("l_shoulder", "l_ankle"),
             "torso": distance("l_shoulder", "l_hip"),
             "inseam": distance("l_hip", "l_knee") + distance("l_knee", "l_ankle"),
         }

@@ -10,6 +10,7 @@ from starlette.concurrency import run_in_threadpool
 from app.config import settings
 from app.core import circumference as circ
 from app.core.calibration import SampleCalibrator
+from app.core.correction_model import BodyShapeCorrectionModel
 from app.core.kalman_filter import LandmarkKalmanFilter
 from app.core.meta_pose import MetaPoseDetector
 from app.core.pose_detector import NAMES
@@ -35,6 +36,7 @@ class MeasurementContext:
         self.engine = TailoringEngine()
         self.meta = MetaPoseDetector(settings.max_symmetry_error)
         self.calibrator = SampleCalibrator(settings.calibration_samples)
+        self.correction_model = BodyShapeCorrectionModel()
         self.buffer: list[dict[str, float]] = []
         self.views: dict[str, dict[str, float]] = {}
 
@@ -107,13 +109,25 @@ class MeasurementContext:
         if not front or not side:
             raise ValueError("Capture both front and side views before saving")
         output = {key: value for key, value in front.items() if not key.startswith("width_")}
-        output.update(
-            circ.combine(
-                {name: front[f"width_{name}"] for name in ("bust", "waist", "hip")},
-                {name: side[f"width_{name}"] for name in ("bust", "waist", "hip")},
-            )
+        
+        front_widths = {
+            key.replace("width_", ""): value for key, value in front.items() if key.startswith("width_")
+        }
+        side_depths = {
+            key.replace("width_", ""): value for key, value in side.items() if key.startswith("width_")
+        }
+
+        output.update(circ.combine(front_widths, side_depths))
+
+        corrected = self.correction_model.correct_all(
+            measurements=output,
+            height_cm=self.height_cm,
+            front_widths=front_widths,
+            side_depths=side_depths,
+            scale_factor=self.engine.world_scale or 1.0,
         )
-        return {name: round(value, 1) for name, value in output.items()}
+
+        return {name: round(value, 1) for name, value in corrected.items()}
 
 
 async def _authenticate(ws: WebSocket) -> str | None:

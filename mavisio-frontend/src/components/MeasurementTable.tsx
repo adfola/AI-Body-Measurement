@@ -4,11 +4,18 @@ import type { Measurement } from "../types";
 const labels: Record<string, string> = {
   shoulder_width: "Shoulder width",
   sleeve: "Sleeve length",
+  upper_arm: "Upper arm length",
+  half_length: "Half length",
+  full_length: "Full body length",
   torso: "Torso length",
   inseam: "Inseam",
-  bust: "Bust",
-  waist: "Waist",
-  hip: "Hip",
+  bust: "Bust circumference",
+  empire: "Empire (Underbust)",
+  waist: "Waist circumference",
+  hip: "Hip circumference",
+  round_sleeve: "Round sleeve",
+  nipple_distance: "Bust point distance",
+  shoulder_to_nipple: "Shoulder to bust point",
 };
 
 export default function MeasurementTable({ items }: { items: Measurement[] }) {

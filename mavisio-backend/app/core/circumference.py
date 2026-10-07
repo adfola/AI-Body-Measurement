@@ -27,11 +27,12 @@ def level_widths_cm(
 ) -> dict[str, float]:
     body_height = body_height_px(mask)
     if body_height <= 0:
-        return {"bust": 0.0, "waist": 0.0, "hip": 0.0}
+        return {"bust": 0.0, "empire": 0.0, "waist": 0.0, "hip": 0.0}
     cm_per_px = known_height_cm / body_height
     span = y_hip - y_shoulder
     rows = {
         "bust": y_shoulder + 0.30 * span,
+        "empire": y_shoulder + 0.45 * span,
         "waist": y_shoulder + 0.68 * span,
         "hip": y_hip + 0.12 * span,
     }
@@ -39,7 +40,9 @@ def level_widths_cm(
 
 
 def combine(front: dict[str, float], side: dict[str, float]) -> dict[str, float]:
+    keys = tuple(name for name in ("bust", "empire", "waist", "hip") if name in front and name in side)
     return {
         name: ramanujan_perimeter(front[name], side[name])
-        for name in ("bust", "waist", "hip")
+        for name in keys
     }
+
