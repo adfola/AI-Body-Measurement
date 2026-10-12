@@ -1,15 +1,36 @@
+# Core API
 fastapi
 uvicorn[standard]
 pydantic-settings
+
+# Database
 sqlalchemy[asyncio]>=2.0
 asyncpg
 alembic
-mediapipe>=0.10.9,<0.10.22
-opencv-python-headless
-numpy<2
+
+# ── NumPy ─────────────────────────────────────────────────────────────────────
+# numpy 2.x is fully compatible with all code in this project.
+# (No deprecated bare-type aliases like np.float/np.int are used.)
+# Python 3.13+ has no numpy 1.x pre-built wheels; allow 2.x here.
+numpy>=1.26,<2
+
+# Computer Vision — primary pose detection
+# Pin to 0.10.14 which includes mp.solutions.pose C++ bindings
+mediapipe==0.10.14
+opencv-python-headless>=4.8,<4.10    # includes ArUco (cv2.aruco) — headless for Docker
 scipy
+
+# YOLO — segmentation + pose fallback + custom keypoints
 ultralytics
+
+# Authentication
 pyjwt
 bcrypt
 python-multipart
 email-validator
+
+# ML correction model (scikit-learn for Ridge regression baseline)
+scikit-learn
+
+# Utilities
+pillow
