@@ -19,7 +19,7 @@ services:
       - key: ENVIRONMENT
         value: production
       - key: CORS_ORIGINS
-        value: '["https://ai-body-measurement-mocha.vercel.app"]'
+        value: '["https://ai-body-measurement-jf6b.vercel.app/"]'
       - key: DB_POOL_SIZE
         value: "5"
       - key: DB_MAX_OVERFLOW
