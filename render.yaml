@@ -4,8 +4,9 @@ services:
     runtime: docker
     plan: standard
     region: frankfurt
-    dockerContext: ./mavisio-backend
-    dockerfilePath: ./mavisio-backend/Dockerfile
+    rootDir: mavisio-backend
+    dockerContext: .
+    dockerfilePath: Dockerfile
     preDeployCommand: alembic upgrade head
     healthCheckPath: /api/v1/health
     envVars:
