@@ -10,6 +10,7 @@ export interface Customer {
 export interface Measurement {
   name: string;
   value_cm: number;
+  value_inches?: number;
 }
 
 export interface Session {
@@ -38,4 +39,5 @@ export interface WsMessage {
   progress?: number;
   view?: View;
   measurements?: Record<string, number>;
+  measurements_inches?: Record<string, number>;
 }

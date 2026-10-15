@@ -11,6 +11,8 @@ Mavisio is a tailor-facing measurement studio for managing customer profiles, gu
 
 Start Docker Desktop, open a terminal in `mavisio-backend`, and run `docker compose up --build`. Compose starts PostgreSQL, applies the migration, and serves the API. In another terminal, run `npm install` and `npm run dev` from `mavisio-frontend`. Open `http://localhost:5173`.
 
+For Render, review and deploy the repository-root `render.yaml` Blueprint. After the backend is live, set `VITE_API_URL` in the Vercel project to the Render service's HTTPS origin and redeploy the frontend. `VITE_WS_URL` is optional; it is derived from the API URL when omitted. The Blueprint provisions paid Render resources, so review its service and database plans before deploying.
+
 Both applications have ignored local `.env` files and committed `.env.example` templates. Keep real keys and credentials out of Git. For setup details and the vertical-scaling approach, see the README in each application.
 
 ## Measurement limitations

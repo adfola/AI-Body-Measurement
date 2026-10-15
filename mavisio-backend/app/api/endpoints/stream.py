@@ -70,6 +70,7 @@ from app.core.meta_pose import MetaPoseDetector
 from app.core.pose_detector import NAMES
 from app.core.quality_gate import check_capture
 from app.core.security import decode_token
+from app.core.tailoring_regression import TailoringRegressionEngine
 from app.db.models import Customer, MeasurementSession, TailoringMeasurement
 from app.db.session import SessionLocal
 from app.utils.image_decoder import decode_frame
@@ -104,6 +105,7 @@ class MeasurementContext:
 
         # Measurement engine (replaces TailoringEngine)
         self.engine = MeasurementEngine()
+        self.tailoring_engine = TailoringRegressionEngine(height_cm)
 
         # Legacy objects kept for pose validation
         self.meta = MetaPoseDetector(settings.max_symmetry_error)
@@ -164,8 +166,15 @@ class MeasurementContext:
             return {"status": "coaching", "coaching": issues}
 
         # ---- Pose symmetry check (front view only) ----
+        source_world = dict(result["world"])
+        for side in ("l", "r"):
+            heel = f"{side}_heel"
+            ankle = f"{side}_ankle"
+            if heel not in source_world and ankle in source_world:
+                source_world[heel] = source_world[ankle]
+
         if self.view == "front":
-            valid, reason = self.meta.validate(result["world"])
+            valid, reason = self.meta.validate(source_world)
             if not valid:
                 return {"status": "bad_pose", "reason": reason}
 
@@ -174,7 +183,7 @@ class MeasurementContext:
         vector = np.array([
             coord
             for key in KEYS
-            for coord in result["world"][key]
+            for coord in source_world[key]
         ])
         smoothed = self.kalman.update(vector).reshape(-1, 3)
         world: dict[str, tuple[float, ...]] = {
@@ -197,8 +206,9 @@ class MeasurementContext:
                 self.calibrator.reset()
                 return {"status": "recalibrate"}
 
-        # ---- Step 3: Camera geometry scale (from ArUco + height) ----
+        # ---- Step 3: Pixel scale (body height, optionally fused with ArUco) ----
         mask = result.get("mask")
+        scale_res = None
         if mask is not None:
             top_px, bot_px = circ.body_top_bottom_px(mask)
             scale_res = self.geometry.estimate_scale(
@@ -207,8 +217,15 @@ class MeasurementContext:
                 body_top_px=top_px,
                 body_bottom_px=bot_px,
             )
-            if scale_res is not None:
-                self._scale_cm_per_px = scale_res.cm_per_px
+
+        tailoring = self.tailoring_engine.predict_tailoring_measurements(
+            landmarks=result["px"],
+            image_height_px=frame.shape[0],
+            scale_cm_per_px=scale_res.cm_per_px if scale_res is not None else None,
+        )
+        self._scale_cm_per_px = tailoring["scale_cm_per_px"]
+        if scale_res is not None:
+            self._scale_cm_per_px = scale_res.cm_per_px
 
         # ---- Step 4: Landmark measurements from smoothed world coords ----
         cm_per_px = self._scale_cm_per_px
@@ -219,6 +236,7 @@ class MeasurementContext:
             custom_px=custom_kp if custom_kp else None,
             cm_per_px=cm_per_px,
         )
+        measurements.update(tailoring["measurements_cm"])
 
         # ---- Step 5: Mask-based width extraction ----
         if mask is not None and cm_per_px:
@@ -254,14 +272,19 @@ class MeasurementContext:
             has_custom_keypoints=bool(custom_kp),
         )
 
+        measurements_cm = {
+            name: round(value, 1)
+            for name, value in measurements.items()
+            if not name.startswith("_")
+        }
         return {
             "status": "ok",
             "calibrated": True,
             "view": self.view,
-            "measurements": {
-                name: round(value, 1)
-                for name, value in measurements.items()
-                if not name.startswith("_")
+            "measurements": measurements_cm,
+            "measurements_inches": {
+                name: round(value / 2.54, 1)
+                for name, value in measurements_cm.items()
             },
             "confidence": confidence,
             "source": result.get("source", "mediapipe"),
@@ -342,21 +365,20 @@ class MeasurementContext:
             output.update(circumferences)
 
         elif front_mask is not None:
-            # Front only: use fixed depth/width ratio (less accurate)
+            # Front only: use body-part-specific depth ratios until a side view is captured.
             front_widths = {
                 k.replace("_width_", ""): v
                 for k, v in front_meas.items()
                 if k.startswith("_width_")
             }
-            # Assume depth ≈ 60% of width (average body proportion)
             for level, w in front_widths.items():
-                output[level] = circ.ramanujan_perimeter(w, w * 0.60)
+                output[level] = self.tailoring_engine.estimate_circumference(w, level)
 
         # ---- Back view refinement ----
         if back_data:
             back_meas = back_data["measurements"]
-            if "shoulder_width" in back_meas:
-                output["back_width"] = back_meas["shoulder_width"]
+            if "back_width" in back_meas:
+                output["back_width"] = back_meas["back_width"]
 
         # ---- Correction model ----
         front_widths_for_correction = {
@@ -392,6 +414,10 @@ class MeasurementContext:
         final_measurements = {name: round(value, 1) for name, value in corrected.items()}
         return {
             "measurements": final_measurements,
+            "measurements_inches": {
+                name: round(value / 2.54, 1)
+                for name, value in final_measurements.items()
+            },
             "confidence": confidence,
         }
 
@@ -505,6 +531,7 @@ async def measurement(ws: WebSocket):
                 await ws.send_json({
                     "status": "saved",
                     "measurements": final_measurements,
+                    "measurements_inches": result["measurements_inches"],
                     "confidence": final_confidence,
                     "views_captured": list(context.views.keys()),
                 })

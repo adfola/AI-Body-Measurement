@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { WS_URL } from "../config";
+import { backendConfigured, WS_URL } from "../config";
 import type { View, WsMessage } from "../types";
 
 type VideoRef = { current: HTMLVideoElement | null };
@@ -18,6 +18,10 @@ export function useMeasurement(
 
   useEffect(() => {
     if (!enabled || !token || !customerId) return;
+    if (!backendConfigured) {
+      setSocketError("The backend is not configured. Set VITE_API_URL to your backend URL.");
+      return;
+    }
     const socket = new WebSocket(WS_URL);
     socketRef.current = socket;
     const canvas = document.createElement("canvas");

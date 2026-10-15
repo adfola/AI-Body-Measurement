@@ -39,6 +39,12 @@ This service deliberately runs a single Uvicorn worker per container. MediaPipe 
 
 For a larger production deployment, terminate TLS at the reverse proxy, allow only the deployed frontend origin, move secrets into the host secret manager, and run one inference process per available machine-sized replica behind a WebSocket-aware load balancer with session affinity.
 
+## Render deployment
+
+The repository-root `render.yaml` defines the Docker web service and a managed PostgreSQL database. Review the instance and database plans before creating the Blueprint; the defaults are paid Render resources. Render runs Alembic once as the pre-deploy command, then starts one Uvicorn worker per container so model memory is not duplicated. Render's `PORT` is used automatically.
+
+The Blueprint generates `JWT_SECRET`, sets the production CORS origin to the live Vercel frontend, and configures a small database pool per replica. To connect the frontend, set Vercel's `VITE_API_URL` to the Render service's HTTPS origin and redeploy. `VITE_WS_URL` can be set to override the corresponding `wss://<service>/ws/measurement` URL.
+
 ## Checks
 
 Run `pytest -v` from this directory. Unit tests for the geometry/filter pipeline do not need PostgreSQL. The WebSocket authentication test does not start the model or database. Real registration, customer CRUD, and measurement persistence require the Compose services to be running.

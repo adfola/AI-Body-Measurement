@@ -49,13 +49,13 @@ export default function MeasurePage() {
   }, [result, startView, step]);
 
   if (loading) return <LoadingState label="Loading client profile" />;
-  if (error) return <div className="page-stack"><Link className="back-link" to="/"><ArrowLeft size={15} /> Clients</Link><div className="inline-error">{error}</div></div>;
+  if (error) return <div className="page-stack"><Link className="back-link" to="/dashboard"><ArrowLeft size={15} /> Clients</Link><div className="inline-error">{error}</div></div>;
   if (!customer) return null;
 
   if (step === "intro") {
     return (
       <div className="page-stack">
-        <Link className="back-link" to="/"><ArrowLeft size={15} /> All clients</Link>
+        <Link className="back-link" to="/dashboard"><ArrowLeft size={15} /> All clients</Link>
         <PageHeading eyebrow="MEASUREMENT SESSION" title={`Measure ${customer.full_name}`} description="A guided two-view capture for a more considered fit." />
         <div className="capture-intro-grid">
           <Card className="capture-prep">
@@ -83,7 +83,7 @@ export default function MeasurePage() {
 
   return (
     <div className="page-stack measure-page">
-      <Link className="back-link" to="/"><ArrowLeft size={15} /> All clients</Link>
+      <Link className="back-link" to="/dashboard"><ArrowLeft size={15} /> All clients</Link>
       <PageHeading
         eyebrow={`MEASUREMENT SESSION · ${customer.full_name.toUpperCase()}`}
         title={step === "front" ? "Front view" : step === "side" ? "Side view" : "Review measurements"}
@@ -102,7 +102,7 @@ export default function MeasurePage() {
           {step === "review" && !isSaved && <div className="review-ready"><ShieldCheck size={23} /><strong>Both views captured</strong><span>Save the measurement session to the client record.</span></div>}
           <CoachingBanner msg={socketError ? { status: "error", reason: socketError } : result} />
           {socketError && <div className="inline-error" role="alert">{socketError}</div>}
-          {!connected && !socketError && <div className="connection-hint"><LoaderCircle className="spin" size={15} /> Connecting to localhost:8000</div>}
+          {!connected && !socketError && <div className="connection-hint"><LoaderCircle className="spin" size={15} /> Connecting to measurement service</div>}
           {isCaptureStep && <Button size="lg" className="capture-button" onClick={capture} disabled={!canCapture}><span className="capture-button-dot" /> Capture {step} view</Button>}
           {step === "review" && !isSaved && <Button size="lg" className="capture-button" onClick={save} disabled={!connected}><Save size={17} /> Save measurements</Button>}
           {isSaved && <Button asChild variant="outline" className="capture-button"><Link to={`/history/${customer.id}`}>View client history <ArrowRight size={16} /></Link></Button>}

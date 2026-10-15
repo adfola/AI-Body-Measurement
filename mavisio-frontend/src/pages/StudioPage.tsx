@@ -34,7 +34,7 @@ export default function StudioPage() {
               {customer.height_cm ? (
                 <Button asChild size="sm"><Link to={`/measure/${customer.id}`}>Start session <ArrowRight size={15} /></Link></Button>
               ) : (
-                <Button asChild variant="outline" size="sm"><Link to="/">Add height</Link></Button>
+                <Button asChild variant="outline" size="sm"><Link to="/dashboard">Add height</Link></Button>
               )}
             </article>
           ))}
@@ -44,7 +44,7 @@ export default function StudioPage() {
           <span className="empty-mark"><UsersRound size={23} /></span>
           <strong>No clients to measure yet</strong>
           <p>Add a client and calibration height to begin a session.</p>
-          <Button asChild size="sm"><Link to="/">Open client directory <ArrowRight size={15} /></Link></Button>
+          <Button asChild size="sm"><Link to="/dashboard">Open client directory <ArrowRight size={15} /></Link></Button>
         </div>
       )}
     </div>

@@ -1,7 +1,79 @@
-venv
+# Git
 .git
+.gitignore
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# Environment files
 .env
-.env.docker
-__pycache__
-tests
-.pytest_cache
+.env.*
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests
+tests/
+coverage/
+htmlcov/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Training outputs
+runs/
+datasets/
+checkpoints/
+weights/
+
+# Torch
+*.pth
+
+# ONNX
+*.onnx
+
+# Tensorflow
+*.pb
+
+# Temp
+tmp/
+temp/
+
+# Documentation
+docs/
+
+# Docker
+docker-compose.yml
+
+# Node
+node_modules/
+
+# Alembic cache
+migrations/__pycache__/
+
+# Media cache
+.cache/

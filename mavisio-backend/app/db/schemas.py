@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, computed_field
 
 
 class UserCreate(BaseModel):
@@ -33,6 +33,11 @@ class MeasurementOut(BaseModel):
 
     name: str
     value_cm: float
+
+    @computed_field
+    @property
+    def value_inches(self) -> float:
+        return round(self.value_cm / 2.54, 1)
 
 
 class SessionOut(BaseModel):

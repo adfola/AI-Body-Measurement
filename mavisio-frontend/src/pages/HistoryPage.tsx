@@ -20,12 +20,12 @@ export default function HistoryPage() {
       .catch((cause: unknown) => setError(cause instanceof Error ? cause.message : "Could not load measurement history."));
   }, [id]);
 
-  if (error) return <div className="page-stack"><Link className="back-link" to="/"><ArrowLeft size={15} /> Clients</Link><div className="inline-error">{error}</div></div>;
+  if (error) return <div className="page-stack"><Link className="back-link" to="/dashboard"><ArrowLeft size={15} /> Clients</Link><div className="inline-error">{error}</div></div>;
   if (!customer || !sessions) return <LoadingState label="Loading measurement history" />;
 
   return (
     <div className="page-stack">
-      <Link className="back-link" to="/"><ArrowLeft size={15} /> All clients</Link>
+      <Link className="back-link" to="/dashboard"><ArrowLeft size={15} /> All clients</Link>
       <PageHeading eyebrow="CLIENT RECORD · MEASUREMENT HISTORY" title={customer.full_name} description={`Height calibration · ${customer.height_cm ?? "Not set"} ${customer.height_cm ? "cm" : ""}`} action={<Link className="history-action" to={`/measure/${customer.id}`}><Ruler size={15} /> New measurement</Link>} />
       {sessions.length ? (
         <div className="history-list">

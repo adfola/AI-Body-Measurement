@@ -1,4 +1,5 @@
 # pyrefly: ignore [missing-import]
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -32,6 +33,15 @@ class Settings(BaseSettings):
     # DB pool
     db_pool_size: int = 10
     db_max_overflow: int = 20
+
+    @field_validator("database_url", mode="before")
+    @classmethod
+    def use_async_postgres_driver(cls, value: str) -> str:
+        if value.startswith("postgres://"):
+            return value.replace("postgres://", "postgresql+asyncpg://", 1)
+        if value.startswith("postgresql://"):
+            return value.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return value
 
 
 settings = Settings()

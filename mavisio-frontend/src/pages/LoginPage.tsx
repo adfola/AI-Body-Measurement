@@ -13,7 +13,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  if (token) return <Navigate to="/" replace />;
+  if (token) return <Navigate to="/dashboard" replace />;
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -67,7 +67,7 @@ export default function LoginPage() {
           </div>
           <div className="secure-note"><ShieldCheck size={16} /><span>Your customer data stays private to your account.</span></div>
         </div>
-        <footer className="auth-footer"><span>MAVISIO STUDIO · LOCAL DEVELOPMENT</span><span>v1.0</span></footer>
+        <footer className="auth-footer"><span>MAVISIO STUDIO · TAILOR WORKSPACE</span><span>v1.0</span></footer>
       </section>
     </main>
   );

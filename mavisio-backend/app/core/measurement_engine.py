@@ -37,6 +37,11 @@ from typing import Any
 import numpy as np
 
 from app.core.circumference import ramanujan_perimeter, level_widths_cm, body_height_px, mask_width_px
+from app.core.tailoring_regression import (
+    BUSTIER_LENGTH_RATIO,
+    SHOULDER_OFFSET_FACTOR,
+    SKIRT_LENGTH_FACTOR,
+)
 
 # cm offset from nose to approximate crown of head
 NOSE_TO_CROWN_CM = 11.5
@@ -146,8 +151,17 @@ class MeasurementEngine:
             "hip_width": dist3d("l_hip", "r_hip"),
         }
 
-        # Back width: use shoulder width as proxy (improved with back view)
-        measurements["back_width"] = measurements["shoulder_width"]
+        # Back width: use shoulder width as a proxy until a back view is available.
+        measurements["back_width"] = (
+            measurements["shoulder_width"] * SHOULDER_OFFSET_FACTOR
+        )
+        measurements["blouse_length"] = measurements["half_length"]
+        measurements["bustier_length"] = (
+            measurements["half_length"] * BUSTIER_LENGTH_RATIO
+        )
+        measurements["skirt_length"] = (
+            dist3d("l_hip", "l_ankle") * SKIRT_LENGTH_FACTOR
+        )
 
         # Custom YOLO keypoint measurements (when available)
         if custom_px and cm_per_px and cm_per_px > 0:

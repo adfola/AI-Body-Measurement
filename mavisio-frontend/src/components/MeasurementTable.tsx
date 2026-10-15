@@ -3,9 +3,13 @@ import type { Measurement } from "../types";
 
 const labels: Record<string, string> = {
   shoulder_width: "Shoulder width",
+  back_width: "Back width",
   sleeve: "Sleeve length",
   upper_arm: "Upper arm length",
   half_length: "Half length",
+  blouse_length: "Blouse length",
+  skirt_length: "Skirt length",
+  bustier_length: "Bustier length",
   full_length: "Full body length",
   torso: "Torso length",
   inseam: "Inseam",
@@ -27,7 +31,10 @@ export default function MeasurementTable({ items }: { items: Measurement[] }) {
       {items.map((measurement) => (
         <div className="measurement-row" key={measurement.name}>
           <span>{labels[measurement.name] ?? measurement.name.replaceAll("_", " ")}</span>
-          <strong>{measurement.value_cm.toFixed(1)} <small>cm</small></strong>
+          <strong>
+            {measurement.value_cm.toFixed(1)}{" "}
+            <small>cm · {(measurement.value_inches ?? measurement.value_cm / 2.54).toFixed(1)} in</small>
+          </strong>
         </div>
       ))}
     </div>

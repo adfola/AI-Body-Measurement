@@ -2,6 +2,7 @@ import { Activity, Users, LogOut, Scissors, PanelLeftClose, PanelLeftOpen } from
 import { useEffect, useState } from "react";
 import { NavLink, Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import { API_URL } from "../config";
 import { Button } from "./ui/button";
 
 export default function ProtectedLayout() {
@@ -26,13 +27,13 @@ export default function ProtectedLayout() {
     <div className={`app-shell ${isMobile ? "sidebar-mobile" : ""} ${sidebarOpen ? "sidebar-open" : "sidebar-closed"}`}>
       {isMobile && sidebarOpen && <button className="sidebar-backdrop" aria-label="Close navigation" onClick={() => setSidebarOpen(false)} />}
       <aside className="sidebar" id="main-sidebar">
-        <NavLink to="/" className="brand-lockup" aria-label="Mavisio home">
+        <NavLink to="/dashboard" className="brand-lockup" aria-label="Mavisio dashboard">
           <span className="brand-mark"><Scissors size={19} strokeWidth={1.8} /></span>
           <span className="brand-label"><strong>MAVISIO</strong><small>MEASUREMENT STUDIO</small></span>
         </NavLink>
         <div className="side-caption">WORKSPACE</div>
         <nav className="side-nav" aria-label="Main navigation">
-          <NavLink to="/" end aria-label="Clients" title="Clients" onClick={() => isMobile && setSidebarOpen(false)} className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
+          <NavLink to="/dashboard" end aria-label="Clients" title="Clients" onClick={() => isMobile && setSidebarOpen(false)} className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
             <Users size={17} /> <span className="nav-label">Clients</span>
           </NavLink>
           <NavLink to="/studio" aria-label="Measurement studio" title="Measurement studio" onClick={() => isMobile && setSidebarOpen(false)} className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
@@ -41,7 +42,7 @@ export default function ProtectedLayout() {
         </nav>
         <div className="sidebar-bottom">
           <span className="status-dot" /> <span className="service-label">Local service</span>
-          <span className="service-url">localhost:8000</span>
+          <span className="service-url">{API_URL || (import.meta.env.DEV ? "localhost:8000 (proxy)" : "Backend not configured")}</span>
         </div>
       </aside>
       <div className="main-column">

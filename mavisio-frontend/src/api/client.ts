@@ -1,4 +1,4 @@
-import { API_URL } from "../config";
+import { API_URL, backendConfigured } from "../config";
 import type { Customer, Session } from "../types";
 
 export class ApiError extends Error {
@@ -19,6 +19,9 @@ export function setToken(value: string | null) {
 }
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  if (!backendConfigured) {
+    throw new ApiError(0, "The backend is not configured. Set VITE_API_URL to your backend URL.");
+  }
   const headers = new Headers(init.headers);
   if (token) headers.set("Authorization", `Bearer ${token}`);
   const response = await fetch(`${API_URL}/api/v1${path}`, { ...init, headers });
