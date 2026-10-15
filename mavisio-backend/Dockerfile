@@ -68,10 +68,6 @@ COPY app ./app
 COPY migrations ./migrations
 COPY alembic.ini .
 
-# Copy models
-COPY yolo11n-pose.pt .
-COPY yolo11n-seg.pt .
-
 # Remove pycache files
 RUN find /usr/local -type d -name "__pycache__" -exec rm -rf {} + || true
 
