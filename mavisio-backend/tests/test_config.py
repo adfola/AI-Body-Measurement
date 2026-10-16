@@ -18,6 +18,16 @@ def test_existing_asyncpg_url_is_preserved():
     assert settings.database_url == database_url
 
 
+def test_cors_origin_trailing_slash_is_normalized():
+    settings = Settings(
+        database_url="postgresql://example.test/mavisio",
+        jwt_secret="test-secret",
+        cors_origins=["https://ai-body-measurement-jf6b.vercel.app/"],
+    )
+
+    assert settings.cors_origins == ["https://ai-body-measurement-jf6b.vercel.app"]
+
+
 def test_measurement_response_keeps_centimeters_and_adds_inches():
     result = MeasurementOut(name="waist", value_cm=92.71).model_dump()
 

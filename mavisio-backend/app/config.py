@@ -43,5 +43,10 @@ class Settings(BaseSettings):
             return value.replace("postgresql://", "postgresql+asyncpg://", 1)
         return value
 
+    @field_validator("cors_origins")
+    @classmethod
+    def normalize_cors_origins(cls, origins: list[str]) -> list[str]:
+        return [origin.rstrip("/") for origin in origins]
+
 
 settings = Settings()
