@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { ArrowUpRight, Clock3, Plus, Ruler, Search, Trash2, UsersRound } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api } from "../api/client";
+import AlertMessage from "../components/AlertMessage";
 import LoadingState from "../components/LoadingState";
 import PageHeading from "../components/PageHeading";
 import { Badge } from "../components/ui/badge";
@@ -59,7 +60,7 @@ export default function CustomersPage() {
   return (
     <div className="page-stack">
       <PageHeading eyebrow="CLIENT DIRECTORY" title="Your clients" description="A considered record of every fitting, ready when you are." action={<Badge className="count-badge"><UsersRound size={13} /> {customers.length} {customers.length === 1 ? "client" : "clients"}</Badge>} />
-      {error && <div className="inline-error" role="alert">{error}</div>}
+      {error && <AlertMessage>{error}</AlertMessage>}
       <div className="customer-layout">
         <Card className="add-customer-card">
           <CardHeader><div className="section-index">01 / NEW RECORD</div><CardTitle>Add a client</CardTitle><p className="card-note">Height helps calibrate every measurement.</p></CardHeader>

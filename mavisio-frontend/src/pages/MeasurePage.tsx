@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Check, CircleHelp, LoaderCircle, Save, ShieldCheck } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
+import AlertMessage from "../components/AlertMessage";
 import CameraView from "../components/CameraView";
 import CoachingBanner from "../components/CoachingBanner";
 import LoadingState from "../components/LoadingState";
@@ -21,8 +22,12 @@ export default function MeasurePage() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [step, setStep] = useState<Step>("intro");
+  const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const switchCamera = useCallback(() => {
+    setFacingMode((mode) => mode === "user" ? "environment" : "user");
+  }, []);
 
   useEffect(() => {
     api.customer(id).then(setCustomer).catch((cause: unknown) => {
@@ -49,7 +54,7 @@ export default function MeasurePage() {
   }, [result, startView, step]);
 
   if (loading) return <LoadingState label="Loading client profile" />;
-  if (error) return <div className="page-stack"><Link className="back-link" to="/dashboard"><ArrowLeft size={15} /> Clients</Link><div className="inline-error">{error}</div></div>;
+  if (error) return <div className="page-stack"><Link className="back-link" to="/dashboard"><ArrowLeft size={15} /> Clients</Link><AlertMessage>{error}</AlertMessage></div>;
   if (!customer) return null;
 
   if (step === "intro") {
@@ -70,7 +75,7 @@ export default function MeasurePage() {
           </Card>
           <div className="capture-side-note"><div className="side-note-icon"><CircleHelp size={19} /></div><span className="section-index">A NOTE ON ACCURACY</span><p>Camera-based measurements are estimates. Fitted clothing and a relaxed, steady pose help improve consistency.</p><span className="note-rule" /><span className="section-index">FRONT + SIDE</span><p>Two silhouettes are used to estimate bust, waist, and hip circumference.</p></div>
         </div>
-        {!customer.height_cm && <div className="inline-error">Add a height between 100 and 230 cm to calibrate this session.</div>}
+        {!customer.height_cm && <AlertMessage>Add a height between 100 and 230 cm to calibrate this session.</AlertMessage>}
         <Button size="lg" className="begin-button" onClick={() => setStep("front")} disabled={!customer.height_cm}>Open camera <ArrowRight size={17} /></Button>
       </div>
     );
@@ -98,10 +103,10 @@ export default function MeasurePage() {
       </div>
       <div className="capture-workspace">
         <section className="camera-column">
-          {!isSaved && step !== "review" && <CameraView videoRef={videoRef} active={isCaptureStep} />}
+          {!isSaved && step !== "review" && <CameraView videoRef={videoRef} active={isCaptureStep} facingMode={facingMode} onSwitchCamera={switchCamera} />}
           {step === "review" && !isSaved && <div className="review-ready"><ShieldCheck size={23} /><strong>Both views captured</strong><span>Save the measurement session to the client record.</span></div>}
           <CoachingBanner msg={socketError ? { status: "error", reason: socketError } : result} />
-          {socketError && <div className="inline-error" role="alert">{socketError}</div>}
+          {socketError && <AlertMessage>{socketError}</AlertMessage>}
           {!connected && !socketError && <div className="connection-hint"><LoaderCircle className="spin" size={15} /> Connecting to measurement service</div>}
           {isCaptureStep && <Button size="lg" className="capture-button" onClick={capture} disabled={!canCapture}><span className="capture-button-dot" /> Capture {step} view</Button>}
           {step === "review" && !isSaved && <Button size="lg" className="capture-button" onClick={save} disabled={!connected}><Save size={17} /> Save measurements</Button>}

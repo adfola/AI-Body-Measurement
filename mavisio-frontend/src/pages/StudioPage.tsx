@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ArrowRight, Ruler, UsersRound } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api } from "../api/client";
+import AlertMessage from "../components/AlertMessage";
 import LoadingState from "../components/LoadingState";
 import PageHeading from "../components/PageHeading";
 import { Button } from "../components/ui/button";
@@ -21,7 +22,7 @@ export default function StudioPage() {
   return (
     <div className="page-stack">
       <PageHeading eyebrow="MEASUREMENT STUDIO" title="Choose a client" description="Select a client to begin a guided front-and-side measurement session." />
-      {error && <div className="inline-error" role="alert">{error}</div>}
+      {error && <AlertMessage>{error}</AlertMessage>}
       {loading ? <LoadingState label="Loading client records" /> : customers.length ? (
         <section className="studio-client-list" aria-label="Clients available for measurement">
           {customers.map((customer) => (

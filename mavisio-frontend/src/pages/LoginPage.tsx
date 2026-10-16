@@ -2,6 +2,7 @@ import { ArrowRight, Eye, EyeOff, Scissors, ShieldCheck } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import AlertMessage from "../components/AlertMessage";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 
@@ -54,7 +55,7 @@ export default function LoginPage() {
               <Input id="password" type={showPassword ? "text" : "password"} autoComplete={mode === "login" ? "current-password" : "new-password"} placeholder="At least 8 characters" minLength={8} value={password} onChange={(event) => setPassword(event.target.value)} required />
               <button type="button" className="password-toggle" aria-label={showPassword ? "Hide password" : "Show password"} onClick={() => setShowPassword((value) => !value)}>{showPassword ? <EyeOff size={17} /> : <Eye size={17} />}</button>
             </div>
-            {error && <div className="form-error" role="alert">{error}</div>}
+            {error && <AlertMessage className="form-error">{error}</AlertMessage>}
             <Button className="auth-submit" size="lg" disabled={busy}>
               {busy ? "Please wait..." : mode === "login" ? "Sign in to studio" : "Create account"}<ArrowRight size={17} />
             </Button>

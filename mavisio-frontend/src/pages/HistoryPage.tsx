@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, CalendarDays, History, Ruler } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../api/client";
+import AlertMessage from "../components/AlertMessage";
 import LoadingState from "../components/LoadingState";
 import MeasurementTable from "../components/MeasurementTable";
 import PageHeading from "../components/PageHeading";
@@ -20,7 +21,7 @@ export default function HistoryPage() {
       .catch((cause: unknown) => setError(cause instanceof Error ? cause.message : "Could not load measurement history."));
   }, [id]);
 
-  if (error) return <div className="page-stack"><Link className="back-link" to="/dashboard"><ArrowLeft size={15} /> Clients</Link><div className="inline-error">{error}</div></div>;
+  if (error) return <div className="page-stack"><Link className="back-link" to="/dashboard"><ArrowLeft size={15} /> Clients</Link><AlertMessage>{error}</AlertMessage></div>;
   if (!customer || !sessions) return <LoadingState label="Loading measurement history" />;
 
   return (
