@@ -43,7 +43,9 @@ For a larger production deployment, terminate TLS at the reverse proxy, allow on
 
 The repository-root `render.yaml` defines the Docker web service and a managed PostgreSQL database. Review the instance and database plans before creating the Blueprint; the defaults are paid Render resources. Render runs Alembic once as the pre-deploy command, then starts one Uvicorn worker per container so model memory is not duplicated. Render's `PORT` is used automatically.
 
-The Blueprint generates `JWT_SECRET`, sets the production CORS origin to the live Vercel frontend, and configures a small database pool per replica. To connect the frontend, set Vercel's `VITE_API_URL` to the Render service's HTTPS origin and redeploy. `VITE_WS_URL` can be set to override the corresponding `wss://<service>/ws/measurement` URL.
+The Blueprint generates `JWT_SECRET`, sets the production CORS origin to `https://ai-body-measurement-jf6b.vercel.app`, and configures a small database pool per replica. For a manually created Render web service, set `DATABASE_URL` to the PostgreSQL database's Internal Database URL, generate `JWT_SECRET`, and set `CORS_ORIGINS` to `["https://ai-body-measurement-jf6b.vercel.app"]`. Keep these variables on the web service; do not put secrets in Git. Production settings always include the exact live frontend origin even if a stale CORS environment value remains, and configured origins have trailing slashes removed.
+
+In Vercel, set `VITE_API_URL` to the Render service's HTTPS origin, such as `https://ai-body-measurement-2.onrender.com` (no trailing slash), then redeploy the frontend. `VITE_WS_URL` is optional; when omitted, the frontend derives the corresponding `wss://<service>/ws/measurement` URL.
 
 ## Checks
 

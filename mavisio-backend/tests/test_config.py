@@ -28,6 +28,17 @@ def test_cors_origin_trailing_slash_is_normalized():
     assert settings.cors_origins == ["https://ai-body-measurement-jf6b.vercel.app"]
 
 
+def test_production_keeps_live_frontend_allowed_if_render_value_is_stale():
+    settings = Settings(
+        database_url="postgresql://example.test/mavisio",
+        jwt_secret="test-secret",
+        environment="production",
+        cors_origins=["https://old-frontend.vercel.app"],
+    )
+
+    assert "https://ai-body-measurement-jf6b.vercel.app" in settings.cors_origins
+
+
 def test_measurement_response_keeps_centimeters_and_adds_inches():
     result = MeasurementOut(name="waist", value_cm=92.71).model_dump()
 
