@@ -3,11 +3,13 @@ import { useState, type FormEvent } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import AlertMessage from "../components/AlertMessage";
+import { useToast } from "../components/ToastProvider";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 
 export default function LoginPage() {
   const { token, login, register } = useAuth();
+  const { notify } = useToast();
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,10 +23,17 @@ export default function LoginPage() {
     setBusy(true);
     setError(null);
     try {
-      if (mode === "login") await login(email, password);
-      else await register(email, password);
+      if (mode === "login") {
+        await login(email, password);
+        notify("Welcome back. You are signed in.", "success");
+      } else {
+        await register(email, password);
+        notify("Your account is ready. You are signed in.", "success");
+      }
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "We could not complete that request.");
+      const message = cause instanceof Error ? cause.message : "We could not complete that request.";
+      setError(message);
+      notify(message, "error");
     } finally {
       setBusy(false);
     }

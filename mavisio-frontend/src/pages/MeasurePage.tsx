@@ -12,6 +12,7 @@ import PageHeading from "../components/PageHeading";
 import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
 import { useMeasurement } from "../hooks/useMeasurement";
+import { useToast } from "../components/ToastProvider";
 import type { Customer } from "../types";
 
 type Step = "intro" | "front" | "side" | "review";
@@ -19,6 +20,7 @@ type Step = "intro" | "front" | "side" | "review";
 export default function MeasurePage() {
   const { id = "" } = useParams();
   const { token } = useAuth();
+  const { notify } = useToast();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [step, setStep] = useState<Step>("intro");
@@ -46,12 +48,19 @@ export default function MeasurePage() {
   useEffect(() => {
     if (result?.status !== "captured") return;
     if (step === "front") {
+      notify("Front view captured. Turn to your right for the side view.", "success");
       setStep("side");
       startView("side");
     } else if (step === "side") {
+      notify("Side view captured. Review and save the measurements.", "success");
       setStep("review");
     }
-  }, [result, startView, step]);
+  }, [notify, result, startView, step]);
+
+  useEffect(() => {
+    if (result?.status === "saved") notify("Measurements saved to the client record.", "success");
+    else if (result?.status === "error") notify(result.reason ?? "The measurement action failed.", "error");
+  }, [notify, result]);
 
   if (loading) return <LoadingState label="Loading client profile" />;
   if (error) return <div className="page-stack"><Link className="back-link" to="/dashboard"><ArrowLeft size={15} /> Clients</Link><AlertMessage>{error}</AlertMessage></div>;

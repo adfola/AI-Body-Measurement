@@ -1,12 +1,16 @@
 import { Activity, Users, LogOut, Scissors, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useEffect, useState } from "react";
-import { NavLink, Navigate, Outlet } from "react-router-dom";
+import { NavLink, Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import { useToast } from "./ToastProvider";
 import { API_URL } from "../config";
 import { Button } from "./ui/button";
 
 export default function ProtectedLayout() {
   const { token, logout } = useAuth();
+  const { notify } = useToast();
+  const { pathname } = useLocation();
+  const captureMode = pathname.startsWith("/measure/");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -24,7 +28,7 @@ export default function ProtectedLayout() {
   if (!token) return <Navigate to="/login" replace />;
 
   return (
-    <div className={`app-shell ${isMobile ? "sidebar-mobile" : ""} ${sidebarOpen ? "sidebar-open" : "sidebar-closed"}`}>
+    <div className={`app-shell ${isMobile ? "sidebar-mobile" : ""} ${sidebarOpen ? "sidebar-open" : "sidebar-closed"} ${captureMode ? "capture-mode" : ""}`}>
       {isMobile && sidebarOpen && <button className="sidebar-backdrop" aria-label="Close navigation" onClick={() => setSidebarOpen(false)} />}
       <aside className="sidebar" id="main-sidebar">
         <NavLink to="/dashboard" className="brand-lockup" aria-label="Mavisio dashboard">
@@ -53,7 +57,7 @@ export default function ProtectedLayout() {
             </Button>
             <span className="topbar-context">TAILOR WORKSPACE <span>/</span> MAVISIO</span>
           </div>
-          <Button variant="ghost" size="sm" onClick={logout} aria-label="Log out">
+          <Button variant="ghost" size="sm" onClick={() => { logout(); notify("You have been signed out.", "success"); }} aria-label="Log out">
             <LogOut size={16} /> <span>Log out</span>
           </Button>
         </header>

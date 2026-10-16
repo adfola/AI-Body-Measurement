@@ -36,7 +36,7 @@
 }
 
 * { box-sizing: border-box; }
-html { min-width: 320px; background: #faf9f6; }
+html { min-width: 320px; background: #faf9f6; scroll-behavior: smooth; }
 body { min-width: 320px; min-height: 100vh; margin: 0; }
 button, input { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
@@ -65,6 +65,16 @@ button { cursor: pointer; }
 .status-dot, .record-dot { width: 7px; height: 7px; border-radius: 50%; background: #82b486; box-shadow: 0 0 0 3px rgba(130,180,134,.13); }
 .service-url { grid-column: 2; color: #8d9a8f; font-family: 'DM Sans', sans-serif; font-size: 10px; }
 .main-column { display: flex; min-width: 0; min-height: 100vh; flex: 1; flex-direction: column; margin-left: 238px; }
+.capture-mode .sidebar { display: none; }
+.capture-mode .main-column { margin-left: 0; }
+.capture-mode .topbar { height: 52px; }
+.capture-mode .page-content { width: 100%; max-width: none; padding: 24px clamp(18px, 4vw, 64px) 40px; }
+.capture-mode .measure-page { gap: 16px; }
+.capture-mode .capture-workspace { grid-template-columns: minmax(0, 1fr) 290px; gap: 24px; }
+.capture-mode .camera-stage { height: clamp(420px, 66svh, 820px); min-height: 420px; aspect-ratio: auto; }
+.capture-mode .camera-stage video { object-fit: contain; background: #151a17; }
+.capture-mode .measurement-aside { position: sticky; top: 72px; }
+.capture-mode .page-heading h1 { font-size: clamp(26px, 3vw, 38px); }
 .topbar { position: sticky; top: 0; z-index: 4; display: flex; height: 61px; align-items: center; justify-content: space-between; border-bottom: 1px solid #e9e7e0; padding: 0 39px; background: rgba(250,249,246,.94); backdrop-filter: blur(12px); }
 .topbar-context { color: #85877e; font-size: 9px; font-weight: 700; letter-spacing: 1.1px; }
 .topbar-context span { padding: 0 7px; color: #c7c1b3; }
@@ -165,6 +175,21 @@ button { cursor: pointer; }
 .app-alert > span { min-width: 0; }
 .form-error { width: 100%; }
 @keyframes alert-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+.toast-region { position: fixed; z-index: 30; top: 18px; right: 18px; display: grid; width: min(390px, calc(100vw - 32px)); gap: 10px; pointer-events: none; }
+.toast { display: grid; grid-template-columns: 20px minmax(0, 1fr) 30px; align-items: center; gap: 10px; border: 1px solid #d9dfd5; border-radius: 16px; padding: 13px 12px 13px 15px; color: #354638; background: rgba(255,255,255,.97); box-shadow: 0 14px 42px rgba(30,38,30,.17); font-size: 13px; line-height: 1.45; pointer-events: auto; animation: toast-in .32s cubic-bezier(.2,.8,.2,1) both; backdrop-filter: blur(12px); }
+.toast > svg { color: #5f8e68; }
+.toast-error { border-color: #eac9c4; color: #8c332a; background: rgba(255,248,247,.98); }
+.toast-error > svg { color: #b44b40; }
+.toast-info { border-color: #e7dec9; color: #695931; }
+.toast-info > svg { color: #a17a2d; }
+.toast-dismiss { display: grid; width: 30px; height: 30px; place-items: center; border: 0; border-radius: 50%; color: #737a70; background: transparent; }
+.toast-dismiss:hover { color: #29332c; background: #f0f1eb; }
+@keyframes toast-in { from { opacity: 0; transform: translate3d(0,-10px,0) scale(.98); } to { opacity: 1; transform: translate3d(0,0,0) scale(1); } }
+.page-content { scroll-margin-top: 70px; }
+.page-stack > *, .capture-workspace > * { animation: content-in .4s ease both; }
+.page-stack > *:nth-child(2) { animation-delay: .04s; }
+.page-stack > *:nth-child(3) { animation-delay: .08s; }
+@keyframes content-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
 .topbar-start { display: flex; min-width: 0; align-items: center; gap: 12px; }
 .sidebar-toggle { flex: 0 0 auto; color: #596258; }
@@ -200,6 +225,10 @@ button { cursor: pointer; }
 }
 
 @media (max-width: 800px) {
+  .app-shell.capture-mode .sidebar { display: none; }
+  .capture-mode .capture-workspace { grid-template-columns: minmax(0, 1fr); }
+  .capture-mode .camera-stage { height: 68svh; min-height: 420px; max-height: 760px; }
+  .capture-mode .measurement-aside { position: static; }
   .app-shell.sidebar-mobile .sidebar {
     position: fixed;
     z-index: 8;
@@ -232,6 +261,13 @@ button { cursor: pointer; }
 }
 
 @media (max-width: 600px) {
+  .capture-mode .page-content { padding: 18px 12px 28px; }
+  .capture-mode .measure-page { gap: 13px; }
+  .capture-mode .camera-stage { height: 65svh; min-height: 360px; max-height: 650px; }
+  .capture-mode .camera-column { width: 100%; }
+  .capture-mode .capture-workspace { gap: 18px; }
+  .capture-mode .measurement-aside { order: 1; }
+  .capture-mode .capture-progress { position: sticky; top: 52px; z-index: 3; padding-top: 8px; background: rgba(250,249,246,.96); backdrop-filter: blur(10px); }
   .topbar-start { gap: 7px; }
   .studio-client-option { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 8px 11px; padding: 13px 0; }
   .studio-client-option > .client-avatar { grid-row: span 2; }

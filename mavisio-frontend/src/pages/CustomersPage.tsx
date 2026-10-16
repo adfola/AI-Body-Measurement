@@ -9,9 +9,11 @@ import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Input } from "../components/ui/input";
+import { useToast } from "../components/ToastProvider";
 import type { Customer } from "../types";
 
 export default function CustomersPage() {
+  const { notify } = useToast();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [name, setName] = useState("");
   const [height, setHeight] = useState("");
@@ -40,8 +42,11 @@ export default function CustomersPage() {
       setCustomers((current) => [customer, ...current]);
       setName("");
       setHeight("");
+      notify("Client added successfully.", "success");
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Could not add customer.");
+      const message = cause instanceof Error ? cause.message : "Could not add customer.";
+      setError(message);
+      notify(message, "error");
     } finally {
       setSaving(false);
     }
@@ -52,8 +57,11 @@ export default function CustomersPage() {
     try {
       await api.deleteCustomer(customer.id);
       setCustomers((current) => current.filter((item) => item.id !== customer.id));
+      notify("Client and their saved measurement history were deleted.", "success");
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Could not delete customer.");
+      const message = cause instanceof Error ? cause.message : "Could not delete customer.";
+      setError(message);
+      notify(message, "error");
     }
   }
 
