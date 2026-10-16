@@ -1,5 +1,5 @@
 # pyrefly: ignore [missing-import]
-from pydantic import ValidationInfo, field_validator
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 PRODUCTION_FRONTEND_ORIGIN = "https://ai-body-measurement-jf6b.vercel.app"
@@ -47,14 +47,9 @@ class Settings(BaseSettings):
 
     @field_validator("cors_origins")
     @classmethod
-    def normalize_cors_origins(
-        cls, origins: list[str], info: ValidationInfo
-    ) -> list[str]:
+    def normalize_cors_origins(cls, origins: list[str]) -> list[str]:
         normalized = [origin.rstrip("/") for origin in origins]
-        if (
-            info.data.get("environment") == "production"
-            and PRODUCTION_FRONTEND_ORIGIN not in normalized
-        ):
+        if PRODUCTION_FRONTEND_ORIGIN not in normalized:
             normalized.append(PRODUCTION_FRONTEND_ORIGIN)
         return normalized
 

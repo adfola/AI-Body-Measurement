@@ -28,11 +28,10 @@ def test_cors_origin_trailing_slash_is_normalized():
     assert settings.cors_origins == ["https://ai-body-measurement-jf6b.vercel.app"]
 
 
-def test_production_keeps_live_frontend_allowed_if_render_value_is_stale():
+def test_live_frontend_remains_allowed_if_render_value_is_stale():
     settings = Settings(
         database_url="postgresql://example.test/mavisio",
         jwt_secret="test-secret",
-        environment="production",
         cors_origins=["https://old-frontend.vercel.app"],
     )
 
