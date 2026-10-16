@@ -7,7 +7,6 @@ services:
     rootDir: mavisio-backend
     dockerContext: .
     dockerfilePath: Dockerfile
-    preDeployCommand: alembic upgrade head
     healthCheckPath: /api/v1/health
     envVars:
       - key: DATABASE_URL
